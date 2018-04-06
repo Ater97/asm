@@ -44,27 +44,27 @@ public class ASM {
     }
     public void CreateTable()
     {
-        SymbolTable.put("SP", "0");//SP 0, LCL 1, ARG 2, THIS 3, THAT 4
-        SymbolTable.put("LCL", "1");
-        SymbolTable.put("ARG", "2");
-        SymbolTable.put("THIS", "3");
-        SymbolTable.put("THAT", "4");
-        SymbolTable.put("R0", "0"); //R0 0, R1 1, R2 2, R3 3...
-        SymbolTable.put("R1", "1");
-        SymbolTable.put("R2", "2");
-        SymbolTable.put("R3", "3");
-        SymbolTable.put("R4", "4");
-        SymbolTable.put("R5", "5");
-        SymbolTable.put("R6", "6");
-        SymbolTable.put("R7", "7");
-        SymbolTable.put("R8", "8");
-        SymbolTable.put("R9", "9");
-        SymbolTable.put("R10", "10");
-        SymbolTable.put("R11", "11");
-        SymbolTable.put("R12", "12");
-        SymbolTable.put("R13", "13");
-        SymbolTable.put("R14", "14");
-        SymbolTable.put("R15", "15");
+        SymbolTable.put("SP", "0000000000000000");//SP 0, LCL 1, ARG 2, THIS 3, THAT 4
+        SymbolTable.put("LCL","0000000000000001");
+        SymbolTable.put("ARG", "0000000000000010");
+        SymbolTable.put("THIS", "0000000000000011" );
+        SymbolTable.put("THAT", "0000000000000100");
+        SymbolTable.put("R0", "0000000000000000"); //R0 0, R1 1, R2 2, R3 3...
+        SymbolTable.put("R1", "0000000000000001");
+        SymbolTable.put("R2", "0000000000000010");
+        SymbolTable.put("R3", "0000000000000011");
+        SymbolTable.put("R4", "0000000000000100");
+        SymbolTable.put("R5", "0000000000000101");
+        SymbolTable.put("R6", "0000000000000110");
+        SymbolTable.put("R7", "0000000000000111");
+        SymbolTable.put("R8", "0000000000001000");
+        SymbolTable.put("R9", "0000000000001001");
+        SymbolTable.put("R10", "0000000000001010");
+        SymbolTable.put("R11", "0000000000001011");
+        SymbolTable.put("R12", "0000000000001100");
+        SymbolTable.put("R13", "0000000000001101");
+        SymbolTable.put("R14", "0000000000001110");
+        SymbolTable.put("R15", "0000000000001111");
         SymbolTable.put("SCREEN", "0100000000000000"); //SCREEN 0x4000, KBD 0x600
         SymbolTable.put("KBD", "0110000000000000");
         
@@ -80,16 +80,28 @@ public class ASM {
                 MainList.add(original.get(i));}
         }  
     }
+    public void cleanblacnk (ArrayList list)
+    {   MainList = new ArrayList<String>();
+        for (int i = 0; i < list.size(); i++) {
+            if ( !"".equals(list.get(i))){
+                MainList.add((String)list.get(i));
+            }
+        }
+    }
     public void SearchLabel()
     {
+        int temp = -1;
         for (int i = 0; i < MainList.size(); i++)
-        {
+        {  temp++;
             if(MainList.get(i).contains("("))
             {
-               SymbolTable.put(MainList.get(i).replaceAll("[()]",""),String.valueOf(U.intToBinary(i)));
-               MainList.remove(i);
+               SymbolTable.put(MainList.get(i).replaceAll("[()]",""),String.valueOf(U.intToBinary(temp)));
+               //MainList.remove(i);
+               MainList.set(i,"");
+               temp--;
             }
-        }    
+        }   
+        cleanblacnk(MainList);
         for (int i = 0; i < MainList.size(); i++) {
             if(MainList.get(i).contains("@"))
             {
@@ -162,7 +174,12 @@ public class ASM {
            
        } else {
            String[] parts = instruction.split("=");
-           comp = getComp(parts[1]);
+             try {
+            comp = getComp(parts[1]);
+            } catch (IndexOutOfBoundsException e) {
+                comp = "0000000";
+            }
+           //comp = getComp(parts[1]);
            switch(parts[0].trim())
            {
                case"M":dest = "001";
